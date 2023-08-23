@@ -1,0 +1,1 @@
+export const GET_ALL_PRODUCT = 'features/Dashboard/GET_ALL_PRODUCTS';
