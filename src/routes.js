@@ -13,7 +13,7 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import ProductPage from './pages/ProductPage';
 import BarangKeluarPage from './pages/BarangKeluarPage';
 import BarangMasukPage from './pages/BarangMasukPage';
-import PDFFile from './components/PDFFile';
+import PDFFile from './components/form.pdf';
 import Button from './theme/overrides/Button';
 import Iconify from './components/iconify';
 

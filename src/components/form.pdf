@@ -1,0 +1,50 @@
+import React from "react";
+import { Page, Text, Image, Document, StyleSheet } from '@react-pdf/renderer';
+
+const styles = StyleSheet.create({
+    body: {
+        paddingTop: 35,
+        paddingBottom: 65,
+        paddingHorizontal: 35,
+    },
+    title: {
+        fontSize: 24,
+        textAlign: "center"
+    },
+    text: {
+        margin: 12,
+        fontSize: 14,
+        textAlign: "justify",
+        fontFamily: "Times-Roman"
+    },
+    header: {
+        fontSize: 12,
+        marginBottom: 20,
+        textAlign: 'center',
+        color: 'grey',
+    },
+    pageNumber: {
+        position: "absolute",
+        fontSize: 12,
+        bottom: 30,
+        left: 0,
+        right: 0,
+        textAlign: 'center',
+        color: 'grey',
+    }
+});
+
+const PDFFile = () => {
+    <Document>
+        <Page style={styles.body} size={'A4'}>
+            <Text style={styles.header} fixed>HEllo</Text>
+            <Text style={styles.text}>Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
+                molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
+                numquam blanditiis harum quisquam eius sed odit fugiat iusto
+            </Text>
+            {/* <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} fixed /> */}
+        </Page>
+    </Document>
+}
+
+export default PDFFile;

@@ -39,7 +39,7 @@ import {
   // TablePagination,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { createProduct, deleteProduct, getProducts, updateProduct } from '../app/api/product';
+import { createProduct, deleteProduct, getProducts, minusQtyProduct, plusQtyProduct, updateProduct } from '../app/api/product';
 import { getAllProduct } from '../app/features/product/actions';
 // components
 // import Label from '../components/label';
@@ -65,7 +65,7 @@ const style = {
 };
 
 export default function ProductPage() {
-  const { dataProducts } = useSelector(state => state);
+  const { dataProducts, dataUser } = useSelector(state => state);
   const dispatch = useDispatch();
 
   const [errors, setErrors] = useState({
@@ -74,6 +74,8 @@ export default function ProductPage() {
   const [titleModal, setTitleModal] = useState({
   });
   const [image, setImage] = useState({});
+
+  //* Untuk Modal Input & Update
   const [value, setValue] = useState({});
   const [open, setOpen] = useState(false);
   const handleOpen = () => {
@@ -81,6 +83,21 @@ export default function ProductPage() {
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  //* Untuk Modal + & - QTY
+  const [qErrors, setQErrors] = useState({
+    alert: null
+  });
+  const [titleQModal, setTitleQModal] = useState({
+  });
+  const [qId, setQId] = useState({});
+  const [qOpen, setQOpen] = useState(false);
+  const handleQOpen = () => {
+    setQOpen(true);
+  };
+  const handleQClose = () => {
+    setQOpen(false);
   };
 
 
@@ -181,6 +198,82 @@ export default function ProductPage() {
     }
   }
 
+  // =====================Bagian Qty=========================================
+  const setModelQty = (set, id) => {
+    // const newQtyId = {[id]:id}
+    setQId({ _id: id });
+    if (set === '-') {
+      setTitleQModal({
+        mode: 'Minus',
+        title: 'Qty Terjual'
+      });
+      handleQOpen();
+    } else if (set === '+') {
+      setTitleQModal({
+        mode: 'Plus',
+        title: 'Qty Masuk'
+      });
+      handleQOpen();
+    }
+  }
+
+  const handleQInput = (e) => {
+    const newObject = { ...qId, [e.target.name]: e.target.value }
+    setQId(newObject);
+  }
+
+  const handleQError = async (validation) => {
+    validation.passes();
+    const error = await validation.errors.errors;
+    if (Object.keys(error).length !== 0) {
+      setQErrors({
+        qty: error.qty,
+      })
+    } else {
+      setErrors({ alert: null });
+      const formdata = new FormData();
+      formdata.append('qty', qId.qty);
+      if (titleQModal.mode === 'Minus') {
+        console.log('minus');
+        const response = await minusQtyProduct(qId._id, formdata);
+        if (response.data.error === 1) {
+          setErrors({ ...alert, alert: <Alert severity="error" style={{ marginBottom: "10px" }}>{response.data.message}</Alert> })
+        } else {
+          setQErrors({ alert: null });
+          setQId({});
+          setTitleQModal({});
+          getProduct();
+          handleQClose();
+        }
+      } else if (titleQModal.mode === 'Plus') {
+        console.log('plus');
+        const response = await plusQtyProduct(qId._id, formdata);
+        if (response.data.error === 1) {
+          setErrors({ ...alert, alert: <Alert severity="error" style={{ marginBottom: "10px" }}>{response.data.message}</Alert> })
+        } else {
+          setQErrors({ alert: null });
+          setQId({});
+          setTitleQModal({});
+          getProduct();
+          handleQClose();
+        }
+      }
+    }
+  }
+
+  const handleQSubmit = (e) => {
+    e.preventDefault();
+    const { _id, qty } = qId;
+    const data = { _id, qty };
+    const rules = {
+      _id: 'required',
+      qty: 'required|numeric'
+    }
+    const validation = new Validator(data, rules);
+    handleQError(validation);
+  }
+  // =====================Bagian Akhir Qty=========================================
+
   const confirmDelete = async (id) => {
     const result = window.confirm("Apakah Anda yakin untuk menghapus");
     if (result) {
@@ -207,9 +300,11 @@ export default function ProductPage() {
           <Typography variant="h4" gutterBottom>
             Product
           </Typography>
-          <Button variant="contained" onClick={(e) => setModel('input')} startIcon={<Iconify icon="eva:plus-fill" />}>
-            Product
-          </Button>
+          {
+            dataUser.user.role === 'admin' ? <Button variant="contained" onClick={(e) => setModel('input')} startIcon={<Iconify icon="eva:plus-fill" />}>
+              Product
+            </Button> : ''
+          }
         </Stack>
 
         <TableContainer component={Paper}>
@@ -221,7 +316,9 @@ export default function ProductPage() {
                 <TableCell align="left">Name</TableCell>
                 <TableCell align="left">Price</TableCell>
                 <TableCell align="left">Qty</TableCell>
-                <TableCell align="center">Action</TableCell>
+                {
+                  dataUser.user.role === 'admin' ? <TableCell align="center">Action</TableCell> : ''
+                }
               </TableRow>
             </TableHead>
             <TableBody>
@@ -236,14 +333,24 @@ export default function ProductPage() {
                     <TableCell align="left">{item.name}</TableCell>
                     <TableCell align="left">{rupiah(item.price)}</TableCell>
                     <TableCell align="left">{item.qty}</TableCell>
-                    <TableCell align="center">
-                      <Button variant="contained" color="success" style={{ marginRight: '10px' }} onClick={(e) => setModel('update', item)}>
-                        Edit
-                      </Button>
-                      <Button variant="contained" color="error" onClick={e => confirmDelete(item._id)}>
-                        Delete
-                      </Button>
-                    </TableCell>
+                    {
+                      dataUser.user.role === 'admin' ? <TableCell align="center">
+                        <Button variant="contained" color="primary" style={{ marginRight: '5px' }} onClick={(e) => setModelQty('-', item._id)}>
+                          - QTY
+                        </Button>
+                        <Button variant="contained" color="success" style={{ marginRight: '5px' }} onClick={(e) => setModel('update', item)}>
+                          Edit
+                        </Button>
+                        <Button variant="contained" color="error" style={{ marginRight: '5px' }} onClick={e => confirmDelete(item._id)}>
+                          Delete
+                        </Button>
+                        {
+                          item.qty === 0 ? <Button variant="contained" color="primary" onClick={(e) => setModelQty('+', item._id)}>
+                            + QTY
+                          </Button> : ''
+                        }
+                      </TableCell> : ''
+                    }
                   </TableRow>
                 ))
               }
@@ -283,10 +390,38 @@ export default function ProductPage() {
               <TextField onChange={handleInput} name="price" label="Price Product" type='number' value={value ? value.price : ''} />
               <small style={{ marginBottom: '10px', color: 'red' }}>{errors ? errors.price : ''}</small>
             </Stack>
-
-            <Stack>
-              <TextField onChange={handleInput} name="qty" label="Qty Product" type='number' value={value ? value.qty : ''} />
+            {/* <Stack>
+              <TextField type='number' onChange={handleInput} name="qty" label="Qty Product" value={value ? value.qty : ''} />
               <small style={{ marginBottom: '10px', color: 'red' }}>{errors ? errors.qty : ''}</small>
+            </Stack> */}
+            {
+              titleModal.mode === 'Update' ? <TextField type='hidden' onChange={handleInput} name="qty" value={value.qty} /> : <Stack>
+                <TextField type='number' onChange={handleInput} name="qty" label="Qty Product" />
+                <small style={{ marginBottom: '10px', color: 'red' }}>{errors ? errors.qty : ''}</small>
+              </Stack>
+            }
+
+            <LoadingButton fullWidth size="large" type="submit" variant="contained" style={{ marginTop: "15px" }}>
+              Submit
+            </LoadingButton>
+          </form>
+        </Box>
+      </Modal>
+      <Modal
+        open={qOpen}
+        onClose={handleQClose}
+        aria-labelledby="parent-modal-title"
+        aria-describedby="parent-modal-description"
+      >
+        <Box sx={{ ...style, width: '50%' }}>
+          <h2 id="parent-modal-title">{titleQModal.title}</h2>
+          {
+            qErrors?.alert !== null ? qErrors.alert : ''
+          }
+          <form onSubmit={handleQSubmit} encType='multipart/form-data'>
+            <Stack>
+              <TextField type='number' onChange={handleQInput} name="qty" label="Qty Product" />
+              <small style={{ marginBottom: '10px', color: 'red' }}>{qErrors ? qErrors.qty : ''}</small>
             </Stack>
 
             <LoadingButton fullWidth size="large" type="submit" variant="contained" style={{ marginTop: "15px" }}>

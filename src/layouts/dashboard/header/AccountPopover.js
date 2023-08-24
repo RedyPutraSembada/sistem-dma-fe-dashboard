@@ -1,10 +1,13 @@
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useState } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
 // mocks_
 import account from '../../../_mock/account';
+import { logoutUser } from '../../../app/api/auth';
+import { userLogout } from '../../../app/features/auth/actions';
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +30,9 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
-  const { dataUser } = useSelector(state => state)
+  const { dataUser } = useSelector(state => state);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -36,6 +41,21 @@ export default function AccountPopover() {
   const handleClose = () => {
     setOpen(null);
   };
+
+  const logout = async () => {
+    const result = window.confirm("Apakah Anda yakin untuk logout?");
+    if (result) {
+      try {
+        await logoutUser();
+        const data = userLogout()
+        dispatch(data);
+        localStorage.removeItem('auth');
+        navigate('/login');
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
 
   return (
     <>
@@ -99,7 +119,7 @@ export default function AccountPopover() {
 
         <Divider sx={{ borderStyle: 'dashed' }} />
 
-        <MenuItem onClick={handleClose} sx={{ m: 1 }}>
+        <MenuItem onClick={logout} sx={{ m: 1 }}>
           Logout
         </MenuItem>
       </Popover>

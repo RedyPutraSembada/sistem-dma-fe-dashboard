@@ -47,3 +47,31 @@ export const deleteProduct = async (id) => {
     );
     return res;
 }
+
+export const minusQtyProduct = async (id, data) => {
+    const userLogin = cekUserLogin();
+    const res = await axios.put(`http://localhost:3001/api/product/keluar/qty/${id}`, data,
+        {
+            headers:
+            {
+                Authorization: userLogin.token,
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        }
+    );
+    return res;
+}
+
+export const plusQtyProduct = async (id, data) => {
+    const userLogin = cekUserLogin();
+    const res = await axios.put(`http://localhost:3001/api/product/masuk/qty/${id}`, data,
+        {
+            headers:
+            {
+                Authorization: userLogin.token,
+                'Content-Type': 'application/json; charset=utf-8'
+            }
+        }
+    );
+    return res;
+}

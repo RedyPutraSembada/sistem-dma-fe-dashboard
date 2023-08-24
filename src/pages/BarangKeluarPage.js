@@ -23,7 +23,7 @@ import { LoadingButton } from '@mui/lab';
 // import Label from '../components/label';
 import Iconify from '../components/iconify';
 import { getAllBarangKeluar } from '../app/api/barangKeluar';
-import PDFFile from '../components/PDFFile';
+import PDFFile from '../components/form.pdf';
 
 const style = {
   position: 'absolute',
@@ -86,12 +86,13 @@ export default function BarangKeluarPage() {
           <Typography variant="h4" gutterBottom>
             Barang Keluar
           </Typography>
-          <PDFDownloadLink document={<PDFFile />} fileName='FORM'>
+          <PDFDownloadLink document={<PDFFile />} fileName='form'>
             {({ loading }) =>
               loading ? (
                 <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />}>Loading Document...</Button>
               ) : (
-                <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />}>Dwonload</Button>)
+                <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />}>Dwonload</Button>
+              )
             }
           </PDFDownloadLink>
         </Stack>

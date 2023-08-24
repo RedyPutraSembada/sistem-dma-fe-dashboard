@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import PropTypes, { element } from 'prop-types';
 import { set, sub } from 'date-fns';
 import { noCase } from 'change-case';
 import { faker } from '@faker-js/faker';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @mui
 import {
   Box,
@@ -77,11 +79,32 @@ const NOTIFICATIONS = [
 ];
 
 export default function NotificationsPopover() {
-  const [notifications, setNotifications] = useState(NOTIFICATIONS);
+  const { dataProducts } = useSelector(state => state);
+  const [notifications, setNotifications] = useState([]);
 
   const totalUnRead = notifications.filter((item) => item.isUnRead === true).length;
 
   const [open, setOpen] = useState(null);
+
+  useEffect(() => {
+    setNotifications([])
+    handleNotifQty()
+  }, [dataProducts])
+
+  const handleNotifQty = () => {
+    dataProducts.data.forEach(element => {
+      if (element.qty === 0) {
+        const arr = [];
+        arr.push({
+          id: element._id,
+          title: `[ ${element.name} ] QTY`,
+          description: `Qty dari ${element.name} sudah Habis Silahkan tambah kembali`,
+          isUnRead: true
+        });
+        setNotifications(arr);
+      }
+    })
+  }
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -89,15 +112,6 @@ export default function NotificationsPopover() {
 
   const handleClose = () => {
     setOpen(null);
-  };
-
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        isUnRead: false,
-      }))
-    );
   };
 
   return (
@@ -129,14 +143,6 @@ export default function NotificationsPopover() {
               You have {totalUnRead} unread messages
             </Typography>
           </Box>
-
-          {totalUnRead > 0 && (
-            <Tooltip title=" Mark all as read">
-              <IconButton color="primary" onClick={handleMarkAllAsRead}>
-                <Iconify icon="eva:done-all-fill" />
-              </IconButton>
-            </Tooltip>
-          )}
         </Box>
 
         <Divider sx={{ borderStyle: 'dashed' }} />
@@ -154,28 +160,7 @@ export default function NotificationsPopover() {
               <NotificationItem key={notification.id} notification={notification} />
             ))}
           </List>
-
-          <List
-            disablePadding
-            subheader={
-              <ListSubheader disableSticky sx={{ py: 1, px: 2.5, typography: 'overline' }}>
-                Before that
-              </ListSubheader>
-            }
-          >
-            {notifications.slice(2, 5).map((notification) => (
-              <NotificationItem key={notification.id} notification={notification} />
-            ))}
-          </List>
         </Scrollbar>
-
-        <Divider sx={{ borderStyle: 'dashed' }} />
-
-        <Box sx={{ p: 1 }}>
-          <Button fullWidth disableRipple>
-            View All
-          </Button>
-        </Box>
       </Popover>
     </>
   );
@@ -196,38 +181,13 @@ NotificationItem.propTypes = {
 };
 
 function NotificationItem({ notification }) {
-  const { avatar, title } = renderContent(notification);
+  const navigate = useNavigate();
+  const { title } = renderContent(notification);
 
   return (
-    <ListItemButton
-      sx={{
-        py: 1.5,
-        px: 2.5,
-        mt: '1px',
-        ...(notification.isUnRead && {
-          bgcolor: 'action.selected',
-        }),
-      }}
-    >
-      <ListItemAvatar>
-        <Avatar sx={{ bgcolor: 'background.neutral' }}>{avatar}</Avatar>
-      </ListItemAvatar>
+    <ListItemButton onClick={(e) => navigate('/dashboard/products')} >
       <ListItemText
         primary={title}
-        secondary={
-          <Typography
-            variant="caption"
-            sx={{
-              mt: 0.5,
-              display: 'flex',
-              alignItems: 'center',
-              color: 'text.disabled',
-            }}
-          >
-            <Iconify icon="eva:clock-outline" sx={{ mr: 0.5, width: 16, height: 16 }} />
-            {fToNow(notification.createdAt)}
-          </Typography>
-        }
       />
     </ListItemButton>
   );
