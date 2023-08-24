@@ -1,27 +1,12 @@
-import { useNavigate } from 'react-router-dom';
-import FormData from 'form-data';
-import Validator from 'validatorjs';
-// import Modal from 'react-bootstrap/Modal';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Helmet } from 'react-helmet-async';
-// import { filter } from 'lodash';
-// import { sentenceCase } from 'change-case';
 import { useEffect, useState } from 'react';
 // @mui
-import ReactPDF from '@react-pdf/renderer';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import {
-  // Card,
   Table,
   Stack,
-  // Paper,
-  // Avatar,
   Button,
-  // Popover,
-  // Checkbox,
-  // TableRow,
-  // MenuItem,
-  // TableBody,
-  // TableCell,
   Container,
   Typography,
   TableContainer,
@@ -30,21 +15,15 @@ import {
   TableCell,
   TableBody,
   Paper,
-  Modal,
-  Box,
-  TextField,
   InputLabel,
   Input,
-  Alert,
-  // IconButton,
-  // TableContainer,
-  // TablePagination,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 // import Label from '../components/label';
 import Iconify from '../components/iconify';
 import { getAllBarangKeluar } from '../app/api/barangKeluar';
+import PDFFile from '../components/PDFFile';
 
 const style = {
   position: 'absolute',
@@ -67,30 +46,11 @@ export default function BarangKeluarPage() {
     start: null,
     end: null
   });
-  const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
-  // const [errors, setErrors] = useState({
-  //   alert: null
-  // });
-  // const [titleModal, setTitleModal] = useState({
-  // });
-  // const [image, setImage] = useState({});
-  // const [value, setValue] = useState({});
-  // const [open, setOpen] = useState(false);
-  // const handleOpen = () => {
-  //   setOpen(true);
-  // };
-  // const handleClose = () => {
-  //   setOpen(false);
-  // };
 
 
 
   useEffect(() => {
     getBarangKeluar();
-    // setValue({});
-    // setImage({});
   }, []);
 
   const getBarangKeluar = async () => {
@@ -98,53 +58,6 @@ export default function BarangKeluarPage() {
     setBarangKeluar(response.data.data);
     // console.log(products);
   }
-
-  // const handleError = async (validation) => {
-  //   validation.passes();
-  //   const error = await validation.errors.errors;
-  //   if (Object.keys(error).length !== 0) {
-  //     setErrors({
-  //       name: error.name,
-  //       description: error.description,
-  //       price: error.price,
-  //       qty: error.qty,
-  //     })
-  //   } else {
-  //     setErrors({ alert: null });
-  //     const formdata = new FormData();
-  //     formdata.append('name', value.name);
-  //     formdata.append('description', value.description);
-  //     formdata.append('price', value.price);
-  //     formdata.append('qty', value.qty);
-  //     formdata.append('image', image);
-  //     if (titleModal.mode === 'Create') {
-  //       const response = await createProduct(formdata);
-  //       if (response.data.error === 1) {
-  //         setErrors({ ...alert, alert: <Alert severity="error" style={{ marginBottom: "10px" }}>{response.data.message}</Alert> })
-  //       } else {
-  //         setErrors({ alert: null });
-  //         setValue({});
-  //         setImage({});
-  //         setTitleModal({});
-  //         getProduct();
-  //         handleClose()
-  //       }
-  //     } else if (titleModal.mode === 'Update') {
-  //       const response = await updateProduct(value._id, formdata);
-  //       if (response.data.error === 1) {
-  //         setErrors({ ...alert, alert: <Alert severity="error" style={{ marginBottom: "10px" }}>{response.data.message}</Alert> })
-  //       } else {
-  //         setErrors({ alert: null });
-  //         setValue({});
-  //         setImage({});
-  //         setTitleModal({});
-  //         getProduct();
-  //         handleClose()
-  //       }
-  //     }
-  //   }
-  // }
-
   const handleSubmit = async () => {
     const response = await getAllBarangKeluar(date.start, date.end);
     setBarangKeluar(response.data.data);
@@ -154,45 +67,12 @@ export default function BarangKeluarPage() {
     const newObject = { ...date, [e.target.name]: e.target.value }
     setDate(newObject);
   }
-
-  // const setModel = (set, item = null) => {
-  //   if (set === 'input') {
-  //     setValue({});
-  //     setImage({});
-  //     setTitleModal({
-  //       mode: 'Create',
-  //       title: 'Create Data Product'
-  //     });
-  //     handleOpen();
-  //   } else if (set === 'update') {
-  //     setImage({});
-  //     setValue(item);
-  //     setTitleModal({
-  //       mode: 'Update',
-  //       title: 'Update Data Product'
-  //     });
-  //     handleOpen();
-  //   }
-  // }
-
-  // const confirmDelete = async (id) => {
-  //   const result = window.confirm("Apakah Anda yakin untuk menghapus");
-  //   if (result) {
-  //     await deleteProduct(id);
-  //     getProduct();
-  //   }
-  // }
-
   const convert = (tgl) => {
     const dt = new Date(tgl);
     const date = dt.getDate();
     const month = dt.toLocaleString('default', { month: 'long' });
     const year = dt.getFullYear();
     return `${date}-${month}-${year}`;
-  }
-
-  const dwonload = () => {
-    navigate('/pdf-barang-keluar', { state: { name: 'hello world' } })
   }
 
   return (
@@ -206,9 +86,14 @@ export default function BarangKeluarPage() {
           <Typography variant="h4" gutterBottom>
             Barang Keluar
           </Typography>
-          <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />} onClick={dwonload}>
-            Dwonload
-          </Button>
+          <PDFDownloadLink document={<PDFFile />} fileName='FORM'>
+            {({ loading }) =>
+              loading ? (
+                <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />}>Loading Document...</Button>
+              ) : (
+                <Button variant="contained" startIcon={<Iconify icon="eva:cloud-download-outline" />}>Dwonload</Button>)
+            }
+          </PDFDownloadLink>
         </Stack>
 
         <TableContainer component={Paper}>

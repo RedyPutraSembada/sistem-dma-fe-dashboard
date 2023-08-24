@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 // import { faker } from '@faker-js/faker';
 // @mui
@@ -24,6 +24,8 @@ import {
 import { getProducts } from '../app/api/product';
 import { getAllProduct } from '../app/features/product/actions';
 import { userLogin } from '../app/features/auth/actions';
+import { getAllBarangMasuk } from '../app/api/barangMasuk';
+// import { element } from 'prop-types';
 
 // ----------------------------------------------------------------------
 
@@ -33,20 +35,94 @@ export default function DashboardAppPage() {
   const dispatch = useDispatch()
   const user = cekUserLogin();
   const navigate = useNavigate();
+  const [barangMasuks, setBarangMasuks] = useState([]);
+  const [tglData, setTgldata] = useState([]);
+  const [kelProduct, setKelProduct] = useState([]);
   useEffect(() => {
     if (user === null) {
       navigate('/login');
     }
     const userl = userLogin(user);
     dispatch(userl);
-    getProduct()
+    getProduct();
+    getBarangMasuk();
   }, []);
+
+  useEffect(() => {
+    aksiPisahDataBarangMasuk(barangMasuks);
+  }, [barangMasuks])
 
   const getProduct = async () => {
     const response = await getProducts();
     const products = getAllProduct(response.data.data);
     dispatch(products);
   }
+
+  const getBarangMasuk = async () => {
+    const response = await getAllBarangMasuk();
+    setBarangMasuks(response.data.data);
+  }
+
+  const aksiPisahDataBarangMasuk = (barangMasuks) => {
+    const arr = [];
+    const kelompokProduct = [];
+    // barangMasuks.findIndex(el => el.tgl_masuk === arr.)
+    barangMasuks.forEach(element => {
+      arr.push(element.tgl_masuk);
+    });
+
+    // const arrIndex = arr.findIndex(el => el  )
+
+    const tglUniq = [...new Set(arr)];
+    setTgldata(tglUniq);
+    // console.log(dataProducts.data);
+    dataProducts.data.forEach(element => {
+      kelompokProduct.push({
+        name: element.name,
+        _id: element._id,
+        type: 'area',
+        fill: 'gradient',
+        data: []
+      })
+    });
+
+    // console.log(barangMasuks);
+    kelompokProduct.forEach(element => {
+      barangMasuks.forEach(el => {
+        if (element._id === el.product._id) {
+          element.data.push(el.qty_masuk)
+        }
+      })
+    });
+    setKelProduct(kelompokProduct);
+
+    let panjang = 0;
+    kelompokProduct.forEach(element => {
+
+      if (panjang < element.data.length) {
+        panjang = element.data.length;
+        console.log(element.data);
+      }
+      if (panjang > element.data.length) {
+        let el = [];
+        for (let index = 1; index < panjang; index += 1) {
+          el.push(0)
+          // console.log(element);
+        }
+        console.log(element.data);
+        console.log(el);
+        const ts = [].concat(el, element.data);
+        element.data = ts;
+        console.log(ts);
+        // element.data.push(ts);
+        el = []
+      }
+
+    })
+  }
+
+  // const aksiHapusDuplicate
+
 
   return (
     <>
@@ -80,45 +156,8 @@ export default function DashboardAppPage() {
             <AppWebsiteVisits
               title="Website Visits"
               subheader="(+43%) than last year"
-              chartLabels={[
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ]}
-              chartData={[
-                {
-                  name: 'Team A',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-                {
-                  name: 'Team D',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [35, 64, 52, 59, 27, 13, 22, 37, 55, 41, 67],
-                },
-              ]}
+              chartLabels={tglData}
+              chartData={kelProduct}
             />
           </Grid>
 

@@ -1,4 +1,4 @@
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { Navigate, useRoutes } from 'react-router-dom';
 // layouts
 import DashboardLayout from './layouts/dashboard';
@@ -13,7 +13,9 @@ import DashboardAppPage from './pages/DashboardAppPage';
 import ProductPage from './pages/ProductPage';
 import BarangKeluarPage from './pages/BarangKeluarPage';
 import BarangMasukPage from './pages/BarangMasukPage';
-import MyDocument from './pages/MyDocument';
+import PDFFile from './components/PDFFile';
+import Button from './theme/overrides/Button';
+import Iconify from './components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -33,7 +35,8 @@ export default function Router() {
       ],
     },
     {
-      path: 'pdf-barang-keluar', element: <MyDocument />
+      path: 'brng-keluar-pdf',
+      element: <PDFFile />,
     },
     {
       path: 'login',
