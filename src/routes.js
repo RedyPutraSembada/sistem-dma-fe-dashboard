@@ -16,6 +16,7 @@ import BarangMasukPage from './pages/BarangMasukPage';
 import PDFFile from './components/form.pdf';
 import Button from './theme/overrides/Button';
 import Iconify from './components/iconify';
+import PDF from './components/pdf';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +37,7 @@ export default function Router() {
     },
     {
       path: 'brng-keluar-pdf',
-      element: <PDFFile />,
+      element: <PDF />,
     },
     {
       path: 'login',
