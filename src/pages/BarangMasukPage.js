@@ -202,13 +202,13 @@ export default function BarangMasukPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> DMA </title>
       </Helmet>
 
       <Container>
         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
           <Typography variant="h4" gutterBottom>
-            Barang Keluar
+            Barang Masuk
           </Typography>
           {/* <Button variant="contained" onClick={(e) => setModel('input')} startIcon={<Iconify icon="eva:plus-fill" />}>
             Product

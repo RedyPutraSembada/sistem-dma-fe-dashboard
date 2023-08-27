@@ -1,0 +1,1 @@
+export const GET_ALL_USERS = 'features/Dashboard/GET_ALL_USERS';

@@ -292,7 +292,7 @@ export default function ProductPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> DMA </title>
       </Helmet>
 
       <Container>

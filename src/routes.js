@@ -17,6 +17,7 @@ import PDFFile from './components/form.pdf';
 import Button from './theme/overrides/Button';
 import Iconify from './components/iconify';
 import PDF from './components/pdf';
+import UsersPage from './pages/UsersPage';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,7 @@ export default function Router() {
         { element: <Navigate to="/dashboard/app" />, index: true },
         { path: 'app', element: <DashboardAppPage /> },
         { path: 'user', element: <UserPage /> },
+        { path: 'users', element: <UsersPage /> },
         { path: 'products', element: <ProductPage /> },
         { path: 'barang-keluar', element: <BarangKeluarPage /> },
         { path: 'barang-masuk', element: <BarangMasukPage /> },

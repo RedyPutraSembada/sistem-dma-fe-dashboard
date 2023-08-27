@@ -25,13 +25,15 @@ import { getProducts } from '../app/api/product';
 import { getAllProduct } from '../app/features/product/actions';
 import { userLogin } from '../app/features/auth/actions';
 import { getAllBarangMasuk } from '../app/api/barangMasuk';
+import { getUsers } from '../app/api/user';
+import { getAllUsers } from '../app/features/user/actions';
 // import { element } from 'prop-types';
 
 // ----------------------------------------------------------------------
 
 export default function DashboardAppPage() {
   // const theme = useTheme();
-  const { dataProducts } = useSelector(state => state);
+  const { dataProducts, dataUsers } = useSelector(state => state);
   const dispatch = useDispatch()
   const user = cekUserLogin();
   const navigate = useNavigate();
@@ -46,7 +48,14 @@ export default function DashboardAppPage() {
     dispatch(userl);
     getProduct();
     getBarangMasuk();
+    users();
   }, []);
+
+  const users = async () => {
+    const response = await getUsers();
+    const users = getAllUsers(response.data.data);
+    dispatch(users);
+  }
 
   useEffect(() => {
     aksiPisahDataBarangMasuk(barangMasuks);
@@ -127,7 +136,7 @@ export default function DashboardAppPage() {
   return (
     <>
       <Helmet>
-        <title> Dashboard | Minimal UI </title>
+        <title> DMA </title>
       </Helmet>
 
       <Container maxWidth="xl">
@@ -141,7 +150,7 @@ export default function DashboardAppPage() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={6}>
-            <AppWidgetSummary title="New Users" total={1352831} color="info" icon={'ant-design:apple-filled'} />
+            <AppWidgetSummary title="Total Users" total={dataUsers.data.length} color="info" icon={'ant-design:user-outlined'} />
           </Grid>
 
           {/* <Grid item xs={12} sm={6} md={6}>
@@ -154,8 +163,8 @@ export default function DashboardAppPage() {
 
           <Grid item xs={12} md={12} lg={12}>
             <AppWebsiteVisits
-              title="Website Visits"
-              subheader="(+43%) than last year"
+              title="Diagram Rata-Rata"
+              subheader="Perhitungan dari barang Masuk"
               chartLabels={tglData}
               chartData={kelProduct}
             />

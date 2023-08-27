@@ -78,7 +78,7 @@ export default function BarangKeluarPage() {
   return (
     <>
       <Helmet>
-        <title> User | Minimal UI </title>
+        <title> DMA </title>
       </Helmet>
 
       <Container>
@@ -99,7 +99,7 @@ export default function BarangKeluarPage() {
 
         <TableContainer component={Paper}>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <h3 style={{ marginRight: '8px' }}>Search By Date :</h3>
+            <h5 style={{ marginRight: '8px', marginTop: '15px' }}>Search By Date :</h5>
             <div style={{ marginRight: '8px' }}>
               <InputLabel htmlFor="start">Start</InputLabel>
               <Input type='date' name='start' id='start' onChange={handleInput} />

@@ -4,6 +4,7 @@ import { cekUserLogin } from "../../utils/cekUserLogin";
 export const getProducts = async () => {
     const userLogin = cekUserLogin();
     const data = await axios.get('http://localhost:3001/api/product', { headers: { Authorization: userLogin.token } });
+    console.log(data);
     return data;
 }
 

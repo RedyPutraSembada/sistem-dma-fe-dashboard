@@ -75,6 +75,7 @@
         "object": true,
         "array": false
       }
-    ]
+    ],
+    "camelcase": ["error", {"properties": "never"}]
   }
 }

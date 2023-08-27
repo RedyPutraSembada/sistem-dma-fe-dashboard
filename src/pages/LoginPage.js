@@ -57,7 +57,7 @@ export default function LoginPage() {
   return (
     <>
       <Helmet>
-        <title> Login | Minimal UI </title>
+        <title> DMA </title>
       </Helmet>
 
       <StyledRoot>
@@ -81,7 +81,7 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <StyledContent>
             <Typography variant="h4" gutterBottom>
-              Sign in to Minimal
+              Sign In
             </Typography>
 
             <Divider sx={{ my: 3 }}>
